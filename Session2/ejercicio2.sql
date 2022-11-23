@@ -26,4 +26,3 @@ left join "db-stage-dev"."so_hdr_cwc" as service on cast(tabla_categorizados.acc
 where clasificacion = 'Activos'
     and service.order_type = 'DEACTIVATION'
     and date_trunc('month', date(service.order_start_date)) = date('2022-10-01') 
-group by 1,2 order by 2
