@@ -29,7 +29,7 @@ GROUP BY 1,2
 clasificacion as (
 SELECT 
     *,
-   CASE WHEN num_llamada = 1 THEN  'Singel Callers' ELSE 'Repeated Callers' END AS category
+   CASE WHEN num_llamada = 1 THEN  'Single Callers' ELSE 'Repeated Callers' END AS category
 FROM num_llamadas
 )
 
