@@ -15,7 +15,7 @@ SELECT
 FROM usuarios_activos
 )
 SELECT 
-    dt_ultimo_registro,
+    DISTINCT dt_ultimo_registro,
     COUNT(DISTINCT act_acct_cd)
 FROM ultimo_registro
 WHERE dt_ultimo_registro < '2022-08-31'
