@@ -1,4 +1,4 @@
-csr_calculated_attributes (
+csr_attributes (
     SELECT 
         sub_acct_no_sbb as cust_acct
         as_of as csr_dte,
