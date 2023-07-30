@@ -53,7 +53,7 @@ select
     MAX ( CASE WHEN lower(offer_type ) = 'single' THEN date_recomm_ms ELSE NULL END ) as SINGLE_REC_DTE ,
     MAX ( CASE WHEN lower(offer_type ) = 'multiple' THEN date_recomm_ms ELSE NULL END ) as MULTIPLE_REC_DTE ,
     rank as RANK_ORDER,
-    MAX (CASE WHEN lower( channel )= 'email' then stb ELSE NULL END) as EMAIL_STB_CODE
+    MAX (CASE WHEN lower( channel )= 'email' then stb ELSE NULL END) as EMAIL_STB_CODE,
     MAX (CASE WHEN lower( channel )= 'email' then delta_arpu ELSE NULL END) as EMAIL_PAY_DIFF, 
     max(regime) as regime,
     reward AS reward,
