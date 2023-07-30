@@ -1,5 +1,3 @@
--- Basic Audience LCPR_CROSS_CUST_ATTRIBUTES
--- Basic Audience LCPR_CROSS_CUST_ATTRIBUTES
 with 
 csr_attributes as (
     SELECT 
@@ -29,18 +27,51 @@ csr_attributes as (
         bill_code AS PCK_CODE,
         res_name_sbb AS CUST_NAME
             from "db-stage-prod"."insights_customer_services_rates_lcpr" 
-    where as_of = date('2023-07-23')
+    where as_of = date('2023-07-27') -- valido para los clientes de 30-07-2023
     -- limit 100
 ),
 
 flagging_attributes as (
 select 
+    
+    sub_acct_no_sbb,
     case when has_privacy_flag = 'X' then true else false end as privacy_flag ,
     case when has_open_order  = 'X' then true else false end as open_order ,
     case when pending_tc  = 'X' then true else false end as trouble_call ,
     case when is_in_ndnc  = 'X' then true else false end as dnt_call_flag 
 from "db-stage-prod"."flagging"  
-limit 100
+-- limit 100
+),
+
+offers_attributes as (
+select 
+    max(pkg_cde) as from_pck_code,
+    MAX (CASE WHEN lower(channel ) = 'email' then hsd_service ELSE NULL END ) as from_hsd_speed,
+    MAX (CASE WHEN lower(channel ) = 'email' then recommendedpkg ELSE NULL END ) as email_to_pck_code,
+    MAX (CASE WHEN lower(channel ) = 'email' THEN tocsgcodefriendlyname ELSE NULL END ) as EMAIL_TO_HSD_SPEED,
+    MAX (CASE WHEN lower( channel )= 'email' then discount ELSE NULL END) as EMAIL_DISCOUNT,
+    MAX ( CASE WHEN lower(offer_type ) = 'single' THEN date_recomm_ms ELSE NULL END ) as SINGLE_REC_DTE ,
+    MAX ( CASE WHEN lower(offer_type ) = 'multiple' THEN date_recomm_ms ELSE NULL END ) as MULTIPLE_REC_DTE ,
+    rank as RANK_ORDER,
+    MAX (CASE WHEN lower( channel )= 'email' then stb ELSE NULL END) as EMAIL_STB_CODE
+    MAX (CASE WHEN lower( channel )= 'email' then delta_arpu ELSE NULL END) as EMAIL_PAY_DIFF, 
+    max(regime) as regime,
+    reward AS reward,
+    offer_type AS type,
+    lower(channel) as channel, 
+    MAX ( CASE WHEN lower( channel ) = 'email' THEN  next_best_action_date_ms ELSE NULL END ) as EMAIL_NEXT_BST_ACTION_DTE,
+    MAX (CASE WHEN lower( channel ) = 'email' then time_frame ELSE NULL END) as EMAIL_TIME_FRAME,
+    MAX (CASE WHEN lower( channel )= 'email' then additional_param_1 ELSE NULL END) as EMAIL_TEMPLATE_TYPE,
+    MAX (CASE WHEN lower( channel )= 'email'   then additional_param_2  ELSE NULL  END) as EMAIL_MESSAGE_TEXT,
+    MAX (CASE WHEN lower( channel )= 'email'   then additional_param_3  ELSE NULL  END) as EMAIL_CALL_TO_ACTION,
+    MAX (CASE WHEN lower( channel )= 'email'   then additional_param_4 ELSE NULL  END) as EMAIL_MESSAGE_SUBJECT
+    case when pkg_cde = (select bill_code from "prod"."public"."insights_customer_services_rates_lcpr" where as_of = date('2023-07-27'))-- se tiene que ajustar la fecha
+    then TRUE else FALSE end as REC_SAME_PKG
+    MAX (CASE WHEN lower( channel )= 'email' then link ELSE NULL END) as EMAIL_LINK,
+    MAX (CASE WHEN lower( channel )= 'email' then link_exp_dt ELSE NULL END) as EMAIL_LINK_EXP_DTE,
+    MAX (CASE WHEN lower( channel )= 'email' then link_dt ELSE NULL END) as EMAIL_LINK_DTE
+    
+from  "prod"."public"."lcpr_offers"  -- ruta de la vista de RS
 ),
 
 TO_ATTRIBUTES_AWS AS (
@@ -300,4 +331,3 @@ LCPR_CALL_NOT_ATTEND_15_DAYS as (
     where out_call_fbk_call_dte >= date('2023-07-16') and -- se toman los ultimos 15 días  
     out_call_fbk_call_not_attend_call = true
 ),
-
