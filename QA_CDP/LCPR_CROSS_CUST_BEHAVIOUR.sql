@@ -1,3 +1,4 @@
+-- CODIGO PARA REALIZAR EN RS
 with
 csr_attributes as (
     SELECT 
