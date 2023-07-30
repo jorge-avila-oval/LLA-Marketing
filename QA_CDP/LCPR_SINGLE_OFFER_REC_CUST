@@ -1,0 +1,19 @@
+WITH 
+csr_customers AS (
+    SELECT 
+        account_id
+    FROM "prod"."public"."insights_customer_services_rates_lcpr"
+    WHERE AS_OF = 1690502400000 
+),
+
+offers as (
+    SELECT 
+        *
+    FROM "prod"."public"."lcpr_offers"
+
+)
+
+SELECT 
+    count(distinct csr_customers.account_id)
+FROM csr_customers LEFT JOIN offers on  csr_customers.account_id = offers.account_id
+WHERE lower(offers.offer_type ) = 'single' and offers.rank = 1
