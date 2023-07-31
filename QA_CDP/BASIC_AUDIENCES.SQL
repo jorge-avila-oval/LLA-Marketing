@@ -26,6 +26,8 @@ csr_attributes as (
         hsd AS HSD,
         bill_code AS PCK_CODE,
         res_name_sbb AS CUST_NAME
+        substring(res_name_sbb, POSITION(',' IN res_name_sbb)+1, length(res_name_sbb) - POSITION(',' IN res_name_sbb)) as cust_first_name,
+        substring(res_name_sbb, 1, POSITION(',' IN res_name_sbb)-1) as cust_last_name
             from "db-stage-prod"."insights_customer_services_rates_lcpr" 
     where as_of =  current_date - interval '3' day -- valido para los clientes de 30-07-2023
     -- limit 100
