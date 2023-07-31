@@ -1,4 +1,4 @@
--- LCPR_CROSS_CUST_ATTRIBUTES basic audience
+-- LCPR_CROSS_CUST_ATTRIBUTES basic audience codigo para correr en Redshift
 WITH 
 csr_customers AS (
     SELECT 
