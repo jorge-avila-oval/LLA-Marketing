@@ -1,4 +1,4 @@
--- CODIGO PARA REALIZAR EN RS
+-- CODIGO PARA REALIZAR EN Athena
 with
 csr_attributes as (
     SELECT 
