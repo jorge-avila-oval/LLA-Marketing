@@ -1,6 +1,6 @@
 with 
 csr_attributes as (
-    SELECT 
+        SELECT 
         sub_acct_no_sbb as cust_acct,
         as_of as csr_dte,
         CASE WHEN welcome_offer = 'X' THEN true ELSE false END as welcome_offer,
@@ -27,20 +27,8 @@ csr_attributes as (
         bill_code AS PCK_CODE,
         res_name_sbb AS CUST_NAME
             from "db-stage-prod"."insights_customer_services_rates_lcpr" 
-    where as_of = date('2023-07-27') -- valido para los clientes de 30-07-2023
+    where as_of =  current_date - interval '3' day -- valido para los clientes de 30-07-2023
     -- limit 100
-),
-
-flagging_attributes as (
-select 
-    
-    sub_acct_no_sbb,
-    case when has_privacy_flag = 'X' then true else false end as privacy_flag ,
-    case when has_open_order  = 'X' then true else false end as open_order ,
-    case when pending_tc  = 'X' then true else false end as trouble_call ,
-    case when is_in_ndnc  = 'X' then true else false end as dnt_call_flag 
-from "db-stage-prod"."flagging"  
--- limit 100
 ),
 
 offers_attributes as (
