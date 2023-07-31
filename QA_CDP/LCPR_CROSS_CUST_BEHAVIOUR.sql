@@ -1,4 +1,4 @@
--- CODIGO PARA REALIZAR EN Athena
+-- LCPR_CROSS_CUST_BEHAVIOUR CODIGO PARA REALIZAR EN Athena
 with
 csr_attributes as (
     SELECT 
