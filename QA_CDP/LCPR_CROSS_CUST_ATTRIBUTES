@@ -1,12 +1,13 @@
+-- LCPR_CROSS_CUST_ATTRIBUTES basic audience
 WITH 
 csr_customers AS (
     SELECT 
-        account_id,
+        account_id as numero_cuenta,
         sub_acct_no_sbb as cust_acct,
         as_of as csr_dte,
-        CASE WHEN welcome_offer = 'X' THEN true ELSE false END as welcome_offer,
-        CASE WHEN acp = 'X' THEN true ELSE false END as subsidize_flag,
-        CASE WHEN joint_customer = 'X' THEN true ELSE false END as joint_customer,
+        CASE WHEN welcome_offer = 'X' THEN true ELSE false END as welcome_off,
+        CASE WHEN acp = 'X' THEN true ELSE false END as subsidize_fl,
+        CASE WHEN joint_customer = 'X' THEN true ELSE false END as joint_cust,
         CASE 
             WHEN  
                 substring(bill_code ,1,1) IN ('R','F') AND 
@@ -39,19 +40,32 @@ offers as (
 
 ),
 
-RS_view as (
-    SELECT 
-        *
-    FROM "prod"."public"."lcpr_customer_service_features"
-)
+ RS_view as (
+     SELECT 
+         *
+     FROM "prod"."public"."lcpr_customer_service_features"
+ )
+
 SELECT 
-    count(distinct csr_customers.account_id)
-FROM csr_customers LEFT JOIN offers on  csr_customers.account_id = offers.account_id 
+    count(distinct numero_cuenta)
+FROM
+(SELECT 
+    -- count(distinct a.numero_cuenta)
+    A.*, B.*
+FROM csr_customers A
+LEFT JOIN offers B
+on  a.numero_cuenta = b.account_id) C
+LEFT JOIN RS_view D
+ON C.numero_cuenta = D.account_id
 WHERE 
     -- condiciones de CSR
-    valid_pckg = true and joint_customer = false and welcome_offer = false and subsidize_flag = false and CUST_TYPE = 'RES' and
+    C.valid_pckg = true  and 
+    C.joint_cust = false and 
+    C.welcome_off = false and 
+    C.subsidize_fl = false and 
+    C.CUST_TYPE = 'RES' and
 
     -- condicion offers
-    bill_code = pkg_cde and 
+    C.PCK_CODE = C.pkg_cde and 
     -- condiciones de la vista de RS
-    num_accounts = 1
+    D.num_accounts = 1
