@@ -35,8 +35,10 @@ csr_customers AS (
 
 offers as (
     SELECT 
-        *
+        account_id,
+        max(regime) as regime_of
     FROM "prod"."public"."lcpr_offers"
+    group by 1
 
 )
 
