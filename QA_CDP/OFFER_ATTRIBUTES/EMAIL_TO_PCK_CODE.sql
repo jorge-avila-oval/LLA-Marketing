@@ -9,13 +9,16 @@ with csr_id as (
 offers as (
     SELECT
         account_id,
-        MAX (
-    CASE WHEN lower(channel ) = 'email' then recommendedpkg ELSE NULL END) AS EMAIL_TO_PCK_CODE
+        -- count(stb)
+        MAX (CASE WHEN lower( channel )= 'email'   then stb  ELSE NULL  END) AS EMAIL_STB_CODE
     from "prod"."public"."lcpr_offers"
+    -- where stb is not null or stb <> ''
     group by 1
 )
 SELECT 
     count(distinct account_id)
 FROM csr_id LEFT JOIN offers offers ON csr_id.numero_cuenta = offers.account_id
-WHERE EMAIL_TO_PCK_CODE is not null  -- poner la condición que se quiere probar en cada uno de los atributos. 
+WHERE 
+    EMAIL_STB_CODE <> ' ' 
+    -- poner la condición que se quiere probar en cada uno de los atributos. 
 ;
