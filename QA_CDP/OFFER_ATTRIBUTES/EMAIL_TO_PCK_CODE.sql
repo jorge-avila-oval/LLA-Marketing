@@ -16,9 +16,9 @@ offers as (
     group by 1
 )
 SELECT 
-    count(distinct account_id)
+    count(distinct numero_cuenta)
 FROM csr_id LEFT JOIN offers offers ON csr_id.numero_cuenta = offers.account_id
 WHERE 
-    EMAIL_STB_CODE <> ' ' 
+    -- EMAIL_STB_CODE <> ' ' 
+    EMAIL_STB_CODE = ' ' or EMAIL_STB_CODE is null
     -- poner la condición que se quiere probar en cada uno de los atributos. 
-;
