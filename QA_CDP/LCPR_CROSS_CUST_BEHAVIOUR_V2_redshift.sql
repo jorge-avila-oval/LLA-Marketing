@@ -28,8 +28,8 @@ csr_attributes as (
         hsd AS HSD,
         bill_code AS PCK_CODE,
         res_name_sbb AS CUST_NAME
-            from "prod"."public"."insights_customer_services_rates_lcpr"
-   WHERE AS_OF = (select max(as_of) from "prod"."public"."insights_customer_services_rates_lcpr" )
+            from "prod"."public"."lcpr_dna_fixed"
+   WHERE AS_OF = (select max(as_of) from "prod"."public"."lcpr_dna_fixed")
     -- limit 100
 ),
 
@@ -45,7 +45,7 @@ from "prod"."public"."flagging"
 -- limit 100
 ),
 
-RS_view as (
+RS_view_attributes as (
      SELECT 
          *
      FROM "prod"."public"."lcpr_customer_service_features"
@@ -58,13 +58,15 @@ from (
 select 
     CSR.*, FLG.*
 from csr_attributes CSR left join flagging_attributes FLG on CSR.numero_cuenta = FLG.account_id 
-)  CSR_FLG LEFT JOIN RS_view ON CSR_FLG.numero_cuenta = RS_view.account_id
+)  CSR_FLG LEFT JOIN RS_view_attributes ON CSR_FLG.numero_cuenta = RS_view_attributes.account_id
 
 where 
+    -- CONDICIONES CROSS_BEHAVIOUR
+
     -- condición de CSR
-    CSR_FLG.delinquency_days <= 50   and
+    CSR_FLG.delinquency_days < 50   and
     -- condición de flagging
-    CSR_FLG.open_order = false   and
-    CSR_FLG.trouble_call = false  and
+    (CSR_FLG.open_order = false  or CSR_FLG.open_order is null) and
+    (CSR_FLG.trouble_call = false  or CSR_FLG.trouble_call is null) and
     -- condición vista de redshift
-    RS_view.change_hsd_speed = false
+    RS_view_attributes.change_hsd_speed = false
