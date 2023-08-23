@@ -26,7 +26,8 @@ csr_attributes as (
         delinquency_days AS DELINQUENCY_DAYS,
         hsd AS HSD,
         bill_code AS pck_code_csr,
-        res_name_sbb AS CUST_NAME
+        res_name_sbb AS CUST_NAME,
+        tenure
             from "prod"."public"."lcpr_dna_fixed"
    WHERE AS_OF = (select max(as_of) from "prod"."public"."lcpr_dna_fixed")
     -- limit 100
@@ -55,42 +56,65 @@ RS_view_attributes as (
         *
     FROM "prod"."public"."lcpr_offers"
 
-)
+),
 
-SELECT 
-    count(distinct numero_cuenta)
-FROM 
-(
-select 
-   *
-from (
+migrations as (
     select 
-        CSR.*, FLG.*
-    from csr_attributes CSR left join flagging_attributes FLG on CSR.numero_cuenta = FLG.account_id 
-)  CSR_FLG LEFT JOIN RS_view_attributes ON CSR_FLG.numero_cuenta = RS_view_attributes.account_id
-) CSR_FLAG_RSVIEW LEFT JOIN offers ON CSR_FLAG_RSVIEW.numero_cuenta = offers.account_id
+        CAST(DATEADD(SECOND, ls_chg_dte_ocr_ms/1000,'1970/1/1') AS DATE) AS chg_date_ocr,
+        *
+    from  "prod"."public"."lcpr_last_transaction_orderactivity"
+),
+
+retargeting_suppres as (
+    select 
+        numero_cuenta as retargeting_Account_id,
+        *
+    from csr_attributes left join migrations on numero_cuenta = migrations.account_id
+    where 
+        chg_date_ocr  >=  DATEADD(month, -3, CURRENT_DATE) or
+        tenure <= 0.5
+),
+
+source_qualify as (
+    SELECT 
+        *
+    FROM 
+    (
+    select 
+    *
+    from (
+        select 
+            CSR.*, FLG.*
+        from csr_attributes CSR left join flagging_attributes FLG on CSR.numero_cuenta = FLG.account_id 
+    )  CSR_FLG LEFT JOIN RS_view_attributes ON CSR_FLG.numero_cuenta = RS_view_attributes.account_id
+    ) CSR_FLAG_RSVIEW LEFT JOIN offers ON CSR_FLAG_RSVIEW.numero_cuenta = offers.account_id
 
 
-where 
-    -- CONDICIONES CROSS_CUST_ATTRIBUTES 
-        -- condiciones de CSR
-    valid_pckg = true  and 
-    joint_cust = false and 
-    welcome_off = false and 
-    subsidize_fl = false and 
-    CUST_TYPE = 'RES' and
+    where 
+        -- CONDICIONES CROSS_CUST_ATTRIBUTES 
+            -- condiciones de CSR
+        valid_pckg = true  and 
+        joint_cust = false and 
+        welcome_off = false and 
+        subsidize_fl = false and 
+        CUST_TYPE = 'RES' and
 
-    -- condicion offers
-    pck_code_csr = pkg_cde and 
-    -- condiciones de la vista de RS
-    num_accounts = 1 and
+        -- condicion offers
+        pck_code_csr = pkg_cde and 
+        -- condiciones de la vista de RS
+        num_accounts = 1 and
 
-    -- CONDICIONES CROSS_BEHAVIOUR
+        -- CONDICIONES CROSS_BEHAVIOUR
 
-    -- condición de CSR
-    delinquency_days < 50   and
-    -- condición de flagging
-    (open_order = false  or open_order is null) and
-    (trouble_call = false  or trouble_call is null) and
-    -- condición vista de redshift
-    change_hsd_speed = false
+        -- condición de CSR
+        delinquency_days < 50   and
+        -- condición de flagging
+        (open_order = false  or open_order is null) and
+        (trouble_call = false  or trouble_call is null) and
+        -- condición vista de redshift
+        change_hsd_speed = false
+)
+SELECT
+        count (distinct source_qualify.numero_cuenta)
+FROM source_qualify left join retargeting_suppres on source_qualify.numero_cuenta = retargeting_suppres.retargeting_Account_id
+where retargeting_suppres.retargeting_Account_id is null 
