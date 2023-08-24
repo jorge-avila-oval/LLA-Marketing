@@ -40,10 +40,7 @@ TO_AWS AS (
         "prod"."public"."transactions_orderactivity"
 )
 select 
-    -- numero_cuenta,
-    -- migration_dte
    count(distinct numero_cuenta)
-
 from csr_attributes CSR left join TO_AWS TORDER on CSR.numero_cuenta = TORDER.numero
 WHERE 
      migration_dte >= DATEADD(month, -6, CURRENT_DATE)
