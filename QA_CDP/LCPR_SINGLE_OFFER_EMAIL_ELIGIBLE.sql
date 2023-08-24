@@ -17,7 +17,7 @@ cs_features as (
     SELECT 
         account_id AS numero,
         lst_bill_dt, 
-        CAST(DATEADD(SECOND, lst_bill_dt/1000,'1970/1/1') AS DATE) AS converted_date, 
+        CAST(DATEADD(SECOND, lst_bill_dt/1000,'1970/1/1') AS DATE) AS lst_bill_date, 
         current_date-10 AS period_evaluated
     FROM "prod"."public"."lcpr_customer_service_features"
 )
@@ -32,4 +32,4 @@ WHERE
     hsd=1 and
     channel = 'email' and 
     email is not null  and 
-    converted_date <= period_evaluated
+    lst_bill_date <= period_evaluated
