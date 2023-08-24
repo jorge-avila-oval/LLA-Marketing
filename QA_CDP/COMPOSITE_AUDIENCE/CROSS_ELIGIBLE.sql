@@ -92,7 +92,7 @@ source_qualify as (
 
     where 
         -- CONDICIONES CROSS_CUST_ATTRIBUTES 
-            -- condiciones de CSR
+        -- condiciones de CSR
         valid_pckg = true  and 
         joint_cust = false and 
         welcome_off = false and 
@@ -102,7 +102,8 @@ source_qualify as (
         -- condicion offers
         pck_code_csr = pkg_cde and 
         -- condiciones de la vista de RS
-        num_accounts = 1 and
+        num_accounts = 1 
+        and
 
         -- CONDICIONES CROSS_BEHAVIOUR
 
@@ -110,11 +111,9 @@ source_qualify as (
         delinquency_days < 50   and
         -- condición de flagging
         (open_order = false  or open_order is null) and
-        (trouble_call = false  or trouble_call is null) and
-        -- condición vista de redshift
-        change_hsd_speed = false
+        (trouble_call = false  or trouble_call is null) 
 )
 SELECT
         count (distinct source_qualify.numero_cuenta)
 FROM source_qualify left join retargeting_suppres on source_qualify.numero_cuenta = retargeting_suppres.retargeting_Account_id
-where retargeting_suppres.retargeting_Account_id is null 
+where retargeting_suppres.retargeting_Account_id is null
