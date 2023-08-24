@@ -43,10 +43,7 @@ select
     -- numero_cuenta,
     -- migration_dte
    count(distinct numero_cuenta)
-from (
-select 
-    *
+
 from csr_attributes CSR left join TO_AWS TORDER on CSR.numero_cuenta = TORDER.numero
-)  CSR_TO
 WHERE 
      migration_dte >= DATEADD(month, -6, CURRENT_DATE)
