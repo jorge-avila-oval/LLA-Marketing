@@ -2,44 +2,35 @@
 WITH
 csr_attributes as(
     SELECT 
-        account_id as numero_cuenta
+        account_id as numero_cuenta,
+        *
     from  "prod"."public"."insights_customer_services_rates_lcpr"
     WHERE AS_OF = (select max(as_of) from "prod"."public"."insights_customer_services_rates_lcpr" )
-),
-
-flagging_attributes as (
-select 
-    *,
-    sub_acct_no_sbb as cust_acct,
-    case when has_privacy_flag = 'X' then true else false end as privacy_flag ,
-    case when has_open_order  = 'X' then true else false end as open_order ,
-    case when pending_tc  = 'X' then true else false end as trouble_call ,
-    case when is_in_ndnc  = 'X' then true else false end as dnt_call_flag
-from "prod"."public"."flagging"
--- limit 100
 ),
 offers as (
     SELECT 
         account_id AS num_id,
         *
     FROM "prod"."public"."lcpr_offers"
-
+-- limit 100
+),
+cs_features as (
+    SELECT 
+        account_id AS numero,
+        lst_bill_dt, 
+        CAST(DATEADD(SECOND, lst_bill_dt/1000,'1970/1/1') AS DATE) AS converted_date, 
+        current_date-10 AS period_evaluated
+    FROM "prod"."public"."lcpr_customer_service_features"
 )
-
 select 
-    count(distinct CSR_FLAGG.numero_cuenta)
+    count(distinct numero_cuenta)
 FROM 
 (SELECT 
     *
-FROM csr_attributes LEFT JOIN flagging_attributes 
-ON csr_attributes.numero_cuenta = flagging_attributes.account_id) CSR_FLAGG LEFT JOIN offers ON CSR_FLAGG.numero_cuenta = offers.account_id
+FROM csr_attributes LEFT JOIN offers 
+ON csr_attributes.numero_cuenta = offers.num_id) CSR_OFFERS LEFT JOIN cs_features ON csr_offers.numero_cuenta = cs_features.numero
 WHERE 
-    --condiciones offers
-    -- offers.next_best_action_date = and 
-    lower(offers.offer_type) = 'single' and 
-    offers.rank = 1 and 
-    -- offers.next_best_action_date = select current_date
-
-    
-    --condiciones flagging
-    CSR_FLAGG.privacy_flag = false -- and
+    hsd=1 and
+    channel = 'email' and 
+    email is not null  and 
+    converted_date <= period_evaluated
