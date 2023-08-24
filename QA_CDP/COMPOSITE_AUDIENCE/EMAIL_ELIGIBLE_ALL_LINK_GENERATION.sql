@@ -191,7 +191,7 @@ Where
 SIDEGRADE_RETARGETING as 
 (
 select 
-   count(distinct numero_cuenta)
+   numero_cuenta
 from csr_attributes CSR left join TO_AWS TORDER on CSR.numero_cuenta = TORDER.numero
 WHERE 
      migration_dte >= DATEADD(month, -6, CURRENT_DATE)
@@ -199,7 +199,7 @@ WHERE
 
 SINGLE_OFFER_EMAIL_ELIGIBLE as ( 
 select 
-    count(distinct numero_cuenta)
+    csr_attributes.numero_cuenta
 FROM csr_attributes LEFT JOIN offers ON csr_attributes.numero_cuenta = offers.account_id
 LEFT JOIN RS_view_attributes ON csr_attributes.numero_cuenta = RS_view_attributes.account_id
 WHERE 
@@ -207,4 +207,36 @@ WHERE
     channel = 'email' and 
     email is not null  and 
     lst_bill_date <= period_evaluated
+),
+
+SINGLE_OFFER_ELIGIBLE as (
+select 
+    CSR_FLAGG.numero_cuenta
+FROM 
+(SELECT 
+    *
+FROM csr_attributes LEFT JOIN flagging_attributes 
+ON csr_attributes.numero_cuenta = flagging_attributes.account_id) CSR_FLAGG LEFT JOIN offers ON CSR_FLAGG.numero_cuenta = offers.account_id
+WHERE 
+    --condiciones offers
+    lower(offers.offer_type) = 'single' and 
+    offers.rank = 1 and 
+    next_best_action_date= current_date AND
+    
+    --condiciones flagging
+    (CSR_FLAGG.privacy_flag = false or CSR_FLAGG.privacy_flag is null)
 )
+
+-- source_qualify_finall as (
+select 
+    count(distinct CROSS_ELIGIBLE.numero_cuenta)
+from CROSS_ELIGIBLE inner join SINGLE_OFFER_EMAIL_ELIGIBLE on CROSS_ELIGIBLE.numero_cuenta = SINGLE_OFFER_EMAIL_ELIGIBLE.numero_cuenta
+    inner join SINGLE_OFFER_ELIGIBLE on CROSS_ELIGIBLE.numero_cuenta = SINGLE_OFFER_ELIGIBLE.numero_cuenta
+-- )
+
+-- supress_final as (
+-- select 
+--     count(distinct CROSS_ELIGIBLE.numero_cuenta)
+-- from CROSS_ELIGIBLE inner join EMAIL_RETARGETING on  CROSS_ELIGIBLE.numero_cuenta = EMAIL_RETARGETING.numero_cuenta
+--     inner join SIDEGRADE_RETARGETING on CROSS_ELIGIBLE.numero_cuenta = SIDEGRADE_RETARGETING.numero_cuenta
+-- )
