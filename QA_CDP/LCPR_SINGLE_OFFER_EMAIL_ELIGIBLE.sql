@@ -1,4 +1,3 @@
--- LCPR_SINGLE_OFFER_ELIGIBLE
 WITH
 csr_attributes as(
     SELECT 
