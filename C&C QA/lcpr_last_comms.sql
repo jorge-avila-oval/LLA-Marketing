@@ -9,7 +9,6 @@ SELECT
     lst_email_contacted_dt as lst_email_contacted_dt_ms
 FROM "prod"."public"."lcpr_last_comms"
 where 
-    lst_email_sent_date = '2023-08-24' and 
     account_id in (
         'LCPR_FX_8211080560106239',
         'LCPR_FX_8211080610139503',
