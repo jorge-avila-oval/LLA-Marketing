@@ -1,4 +1,3 @@
--- LCPR_CROSS_CUST_BEHAVIOUR Redshift
 with
 csr_attributes as (
     SELECT 
@@ -51,22 +50,10 @@ RS_view_attributes as (
      FROM "prod"."public"."lcpr_customer_service_features"
  )
 
-
-select 
-   count(distinct CSR_FLG.numero_cuenta)
-from (
-select 
-    CSR.*, FLG.*
-from csr_attributes CSR left join flagging_attributes FLG on CSR.numero_cuenta = FLG.account_id 
-)  CSR_FLG LEFT JOIN RS_view_attributes ON CSR_FLG.numero_cuenta = RS_view_attributes.account_id
-
+SELECT 
+    count(distinct csr_attributes.numero_cuenta)
+FROM csr_attributes left join flagging_attributes on csr_attributes.numero_cuenta = flagging_attributes.account_id
 where 
-    -- CONDICIONES CROSS_BEHAVIOUR
-
-    -- condición de CSR
-    CSR_FLG.delinquency_days < 50   and
-    -- condición de flagging
-    (CSR_FLG.open_order = false  or CSR_FLG.open_order is null) and
-    (CSR_FLG.trouble_call = false  or CSR_FLG.trouble_call is null) and
-    -- condición vista de redshift
-    RS_view_attributes.change_hsd_speed = false
+    csr_attributes.DELINQUENCY_DAYS < 50 and
+    flagging_attributes.open_order = false and 
+    flagging_attributes.trouble_call = false
