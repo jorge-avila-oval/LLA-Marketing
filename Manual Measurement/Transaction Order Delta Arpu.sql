@@ -7,8 +7,13 @@ communication_hist as
 ),
 
 contact_data as (
-
-)
+    select 
+        lcpr_aiq_id,
+        lcpr_lla_id
+        externalid,
+        offer_from_pck_code
+    FROM "db_dev_cdp_project"."emarsys_contact_data"
+),
 
 transaction_order as 
 (
