@@ -27,13 +27,14 @@ LINK_ELIGIBLE_CRITERIA as (
 
 TARGET_CUST AS (
     SELECT 
-        numero_cuenta
+        offers.account_id
     FROM csr_attributes left join  offers on csr_attributes.numero_cuenta = offers.account_id
     where regime = 'offerfit'
 
 )
 
 SELECT 
-    COUNT(DISTINCT numero_cuenta)
+    count(DISTINCT numero_cuenta)
 FROM csr_attributes
-    INNER JOIN LINK_ELIGIBLE_CRITERIA ON csr_attributes.numero_cuenta = LINK_ELIGIBLE_CRITERIA.account_id
+INNER JOIN LINK_ELIGIBLE_CRITERIA ON csr_attributes.numero_cuenta = LINK_ELIGIBLE_CRITERIA.account_id
+INNER JOIN TARGET_CUST ON csr_attributes.numero_cuenta = TARGET_CUST.account_id
