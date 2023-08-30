@@ -110,10 +110,11 @@ source_qualify as (
         -- condición de CSR
         delinquency_days < 50   and
         -- condición de flagging
-        (open_order = false  or open_order is null) and
-        (trouble_call = false  or trouble_call is null) 
+        open_order = false and
+        trouble_call = false  
 )
 SELECT
         count (distinct source_qualify.numero_cuenta)
 FROM source_qualify left join retargeting_suppres on source_qualify.numero_cuenta = retargeting_suppres.retargeting_Account_id
 where retargeting_suppres.retargeting_Account_id is null
+
