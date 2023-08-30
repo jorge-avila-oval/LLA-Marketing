@@ -114,8 +114,8 @@ source_qualify as (
         -- condición de CSR
         delinquency_days < 50   and
         -- condición de flagging
-        (open_order = false  or open_order is null) and
-        (trouble_call = false  or trouble_call is null) 
+        open_order = false and
+        trouble_call = false  
 ),
 LAST_COMMS_42 AS ( 
     SELECT  
@@ -224,7 +224,7 @@ WHERE
     next_best_action_date= current_date AND
     
     --condiciones flagging
-    (CSR_FLAGG.privacy_flag = false or CSR_FLAGG.privacy_flag is null)
+    CSR_FLAGG.privacy_flag = false
 )
 
 -- source_qualify_finall as (
@@ -232,8 +232,6 @@ select
     count(distinct CROSS_ELIGIBLE.numero_cuenta)
 from CROSS_ELIGIBLE inner join SINGLE_OFFER_EMAIL_ELIGIBLE on CROSS_ELIGIBLE.numero_cuenta = SINGLE_OFFER_EMAIL_ELIGIBLE.numero_cuenta
     inner join SINGLE_OFFER_ELIGIBLE on CROSS_ELIGIBLE.numero_cuenta = SINGLE_OFFER_ELIGIBLE.numero_cuenta
--- )
-
 -- supress_final as (
 -- select 
 --     count(distinct CROSS_ELIGIBLE.numero_cuenta)
