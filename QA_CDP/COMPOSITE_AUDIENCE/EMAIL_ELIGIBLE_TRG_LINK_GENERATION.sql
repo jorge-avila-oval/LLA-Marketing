@@ -114,8 +114,8 @@ source_qualify as (
         -- condición de CSR
         delinquency_days < 50   and
         -- condición de flagging
-        (open_order = false  or open_order is null) and
-        (trouble_call = false  or trouble_call is null) 
+        open_order = false  and
+        trouble_call = false 
 ),
 LAST_COMMS_42 AS ( 
     SELECT  
@@ -224,7 +224,7 @@ WHERE
     next_best_action_date= current_date AND
     
     --condiciones flagging
-    (CSR_FLAGG.privacy_flag = false or CSR_FLAGG.privacy_flag is null)
+    CSR_FLAGG.privacy_flag = false
 ),
 
 TARGET_CUST AS (
