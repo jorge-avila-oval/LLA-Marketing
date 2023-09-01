@@ -18,8 +18,7 @@ SELECT
     dt_ms
 FROM "prod"."public"."lcpr_communications_hst"
 WHERE 
-    channel = 'email' and sent_dt_ms is not null and 
+    channel = 'email' and 
+    sent_dt >= date('2023-08-29') and 
   -- condición para incluir el nombre de los automation program que enviaron los correos
     campaign  in ('CBM_CDP_OFFERFIT_UPSELLING_TARGET', 'CBM_CDP_OFFERFIT_UPSELLING_CONTROL')
-    and dt = '20230829' 
-    and account_id in ()
