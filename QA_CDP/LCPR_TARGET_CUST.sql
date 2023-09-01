@@ -35,14 +35,15 @@ csr_customers AS (
 
 offers as (
     SELECT 
-        account_id,
-        max(regime) as regime_of
+        -- account_id,
+        -- max(regime) as regime_of,
+        *
     FROM "prod"."public"."lcpr_offers"
-    group by 1
+    -- group by 1
 
 )
 
 SELECT 
     COUNT(Distinct csr_customers.numero_cuenta)
 FROM csr_customers LEFT JOIN offers ON csr_customers.numero_cuenta = offers.account_id
-WHERE lower(offers.regime) = 'offerfit'
+WHERE lower(offers.regime)= 'offerfit'
