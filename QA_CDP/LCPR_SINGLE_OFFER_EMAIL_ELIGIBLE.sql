@@ -18,7 +18,7 @@ cs_features as (
         account_id AS numero,
         lst_bill_dt, 
         CAST(DATEADD(SECOND, lst_bill_dt/1000,'1970/1/1') AS DATE) AS lst_bill_date, 
-        current_date-10 AS period_evaluated
+        current_date-0 AS period_evaluated
     FROM "prod"."public"."lcpr_customer_service_features"
 )
 select 
