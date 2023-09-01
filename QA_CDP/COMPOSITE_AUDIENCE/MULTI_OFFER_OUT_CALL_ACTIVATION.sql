@@ -108,8 +108,8 @@ source_qualify as (
         -- condición de CSR
         delinquency_days < 50   and
         -- condición de flagging
-        (open_order = false  or open_order is null) and
-        (trouble_call = false  or trouble_call is null) 
+        open_order = false and
+        trouble_call = false   
 ),
 
 CROSS_ELIGIBLE as (
@@ -137,7 +137,7 @@ MULTI_OFFER_OUT_CALL_ELIGIBLE AS (
     where 
         lower(offer_type) = 'multiple' and 
         lower(channel) = 'call center' AND
-        (dnt_call_flag = FALSE OR dnt_call_flag IS NULL)
+        dnt_call_flag = FALSE
     ),
     
 MULTI_OFFER_INBOUND_CALL as (
@@ -219,6 +219,13 @@ Where
     or
     -- -- converted_6_month
     e.condition=true
+),
+
+TARGET_CUST AS (
+    SELECT 
+        csr_attributes.numero_cuenta
+    FROM csr_attributes LEFT JOIN offers ON csr_attributes.numero_cuenta = offers.account_id 
+    WHERE offers.regime = 'offerfit'
 )
 
 select 
@@ -227,5 +234,6 @@ from csr_attributes
     INNER JOIN CROSS_ELIGIBLE on csr_attributes.numero_cuenta = CROSS_ELIGIBLE.numero_cuenta
     INNER JOIN MULTI_OFFER_OUT_CALL_ELIGIBLE ON csr_attributes.numero_cuenta = MULTI_OFFER_OUT_CALL_ELIGIBLE.numero_cuenta
     INNER JOIN MULTI_OFFER_INBOUND_CALL ON csr_attributes.numero_cuenta = MULTI_OFFER_INBOUND_CALL.numero_cuenta
+    INNER JOIN TARGET_CUST ON csr_attributes.numero_cuenta = TARGET_CUST.numero_cuenta
     LEFT JOIN OUT_CALL_RETARGETING ON csr_attributes.numero_cuenta = OUT_CALL_RETARGETING.numero_cuenta
 WHERE OUT_CALL_RETARGETING.numero_cuenta IS NULL
