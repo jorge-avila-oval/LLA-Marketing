@@ -77,6 +77,8 @@ from_to_pck_migrations as
     select 
         distinct 
         account_id,
+        sent_dt,
+        conversion_dt,
         lcpr_aiq_id,
         order_id,
         offer_from_pck_code,
@@ -115,6 +117,8 @@ from from_to_pck_migrations
     inner join assets_pck_price to_pck_price on new_bundle = to_pck_price.pkg_cde_pks
 )
 
-select 
-    sum (delta_arpu)
-from final_delta_arpu
+select * from final_delta_arpu
+
+-- select 
+--     sum (delta_arpu)
+-- from final_delta_arpu
