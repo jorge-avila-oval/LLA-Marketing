@@ -1,4 +1,4 @@
--- communication history Redshift
+-- communication history Athena
 SELECT 
     *
 FROM "db_dev_cdp_project"."communications_hist" 
