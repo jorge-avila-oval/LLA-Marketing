@@ -29,5 +29,5 @@ select
     -- *
 from contacted_cust inner join last_transaction on contacted_cust.account_id = last_transaction.account_id
 where 
-    -- ord_date >= sent_date AND
+    - ord_date >= sent_date AND
      contact_dt_ms is not null 
