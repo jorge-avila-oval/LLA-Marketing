@@ -9,13 +9,24 @@ with last_transaction as (
 contacted_cust as (
     SELECT 
         CAST(DATEADD(SECOND, sent_dt_ms/1000,'1970/1/1') AS DATE) as sent_date ,
+        CAST(DATEADD(SECOND, contact_dt_ms/1000,'1970/1/1') AS DATE) as contact_date,
         *
     FROM "prod"."public"."lcpr_communications_hst" 
     WHERE sent_date >= date('2023-08-29') and channel = 'email'
 )
 
 select 
-    *
+    contacted_cust.account_id,
+    sent_date,
+    sent_dt_ms,
+    contact_date,
+    contact_dt_ms,
+    conv_type,
+    ord_date,
+    cable_up,
+    internet_up,
+    phone_up
+    -- *
 from contacted_cust inner join last_transaction on contacted_cust.account_id = last_transaction.account_id
 where 
     -- ord_date >= sent_date AND
