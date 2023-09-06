@@ -1,0 +1,28 @@
+SELECT 
+    contact_id,
+    launch_id,
+    domain,
+    email_sent_at,
+    campaign_type,
+    platform,
+    md5,
+    is_mobile,
+    is_anonymized,
+    uid,
+    user_agent,
+    section_id,
+    link_id,
+    category_id,
+    is_img,
+    campaign_id,
+    message_id,
+    event_time,
+    customer_id,
+    partitiontime,
+    loaded_at,
+    category_name,
+    relative_link_id,
+    month,
+    day
+FROM "db_dev_cdp_project"."feedback_email_clicks" 
+where date(email_sent_at) >= date('2023-08-29')
