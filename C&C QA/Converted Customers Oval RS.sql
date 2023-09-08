@@ -22,12 +22,14 @@ select
     contact_date,
     contact_dt_ms,
     conv_type,
+    order_no_ooi,
     ord_date,
     cable_up,
     internet_up,
-    phone_up
+    phone_up,
+    channel
     -- *
 from contacted_cust inner join last_transaction on contacted_cust.account_id = last_transaction.account_id
 where 
-    ord_date >= sent_date AND
-    contact_dt_ms is not null 
+    ord_date >= contact_date AND
+     contact_dt_ms is not null
