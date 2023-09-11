@@ -27,9 +27,11 @@ select
     cable_up,
     internet_up,
     phone_up,
-    channel
+    channel,
+    datediff(day,contact_date, ord_date)
     -- *
 from contacted_cust inner join last_transaction on contacted_cust.account_id = last_transaction.account_id
 where 
     ord_date >= contact_date AND
-     contact_dt_ms is not null
+     contact_dt_ms is not null 
+     and datediff(day,sent_date, ord_date) <= 15
