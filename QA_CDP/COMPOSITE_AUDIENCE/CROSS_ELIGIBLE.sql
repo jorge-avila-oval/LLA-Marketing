@@ -23,7 +23,9 @@ csr_attributes as (
         cyc_cde_sbb as INVOICE_DAY,
         email as EMAIL,
         cust_typ_sbb AS CUST_TYPE,
-        delinquency_days AS DELINQUENCY_DAYS,
+        case 
+            when delinquency_days = 0 then delinquency_days
+            when delinquency_days > 0 then delinquency_days + 2 end AS DELINQUENCY_DAYS,
         hsd AS HSD,
         bill_code AS pck_code_csr,
         res_name_sbb AS CUST_NAME,
@@ -117,4 +119,3 @@ SELECT
         count (distinct source_qualify.numero_cuenta)
 FROM source_qualify left join retargeting_suppres on source_qualify.numero_cuenta = retargeting_suppres.retargeting_Account_id
 where retargeting_suppres.retargeting_Account_id is null
-
