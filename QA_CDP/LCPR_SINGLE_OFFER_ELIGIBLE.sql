@@ -16,7 +16,8 @@ offers as (
         account_id AS num_id,
         offer_type,
         rank,
-        next_best_action_date
+        CASE
+            WHEN lower( channel ) = 'email' THEN  next_best_action_date ELSE NULL END as next_best_action_date
     FROM "prod"."public"."lcpr_offers"
 )
 select 
