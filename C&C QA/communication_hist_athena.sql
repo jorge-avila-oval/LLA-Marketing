@@ -1,4 +1,3 @@
-
 -- communication history Athena
 SELECT 
     account_id,
@@ -8,12 +7,14 @@ SELECT
     contact_id,
     campaign_id,
     comm_dt,
-    sent_dt	cancel_dt,
+    sent_dt,
+    cancel_dt,
     cancel_reason,
     bounce_dt,
     dsn_reason,
     bounce_type,
-    open_dt	click_dt,
+    open_dt,
+    click_dt,
     clicks_count,
     contact_dt,
     id_oferta_int,
