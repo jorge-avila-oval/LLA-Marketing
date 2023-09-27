@@ -1,7 +1,9 @@
+
 -- communication history Athena
 SELECT 
     account_id,
-    sub_acct_no_sbb	use_case,
+    sub_acct_no_sbb,
+    use_case,
     campaign_name,
     contact_id,
     campaign_id,
