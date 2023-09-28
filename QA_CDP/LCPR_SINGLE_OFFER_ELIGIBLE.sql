@@ -58,8 +58,8 @@ FROM csr_attributes left join  offers on csr_attributes.numero_cuenta = offers.a
     left join flagging_attributes on csr_attributes.numero_cuenta = flagging_attributes.account_id
 WHERE 
     privacy_flag = false
-    rank = 1
-     lower(offer_type) = 'single'
+    and rank = 1
+    and lower(offer_type) = 'single'
 )
 select 
     count(distinct numero_cuenta) 
